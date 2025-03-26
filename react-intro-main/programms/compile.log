@@ -1,0 +1,8 @@
+stdout:
+tb_vhdl_code.vhdl:85:7:@6553850ns:(assertion failure): Simulation ended!
+ghdl:error: assertion failed
+ghdl:error: simulation failed
+
+stderr:
+
+error: Command failed: cd programms && del /f /q work-obj93.cf && ghdl -a vhdl_code.vhdl && ghdl -a tb_vhdl_code.vhdl && ghdl -e tb_adder && ghdl -r tb_adder --vcd=out.vcd
