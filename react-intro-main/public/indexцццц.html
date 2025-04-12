@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+
+html, body {
+  overflow: hidden; /* Убираем прокрутку */
+}
+
+.my-container {
+  position: relative;
+  overflow: hidden;
+  width: 50%;
+  height: 100vh;
+  top: -85px;
+  margin-left: 30px;
+  background: url(./images/grid.gif);
+  cursor: default;
+    }
+
+.body2 {
+    position: fixed;
+    width: 100%;
+    height: 60px; /* Увеличено для размещения текста */
+    background-color: #2b2e33;
+    border: 4px solid #000000;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+  }
+
+  .top-buttons {
+    display: flex;
+    gap: 10px; /* Расстояние между кнопками */
+    padding: 0 10px;
+  }
+
+  .button-container {
+    display: flex;
+    flex-direction: column; /* Расположение кнопки и текста сверху вниз */
+    align-items: center; /* Центрирование кнопки и текста */
+    gap: 1px; /* Расстояние между кнопкой и текстом */
+  }
+
+  .button-container input, .button-list input, .button-list button input{
+    width: 35px;
+    height: 35px;
+    background-size: 100%;
+    cursor: pointer;
+  }
+
+  .button-container input:hover, .button-list input:hover, .button-list button input:hover{
+    filter: brightness(1.2); /* Эффект при наведении */
+  }
+
+
+  .button-label {
+    font-size: 12px; /* Размер шрифта */
+  color: #dbdbdb; /* Цвет текста */
+  margin-top: 0px; /* Отступ между кнопкой и текстом */
+  text-align: center;
+    z-index: 10000;
+  }
+      .body1 {
+        position: absolute;
+        width: 60px;
+        height: 100%;
+        left: 0px;
+        top: 0px;
+        background: #2b2e33;
+        border: 4px solid #000000;
+        z-index: 1;
+      }
+      .rectangle {
+        top: 60px;
+        position: absolute;
+        left: 60px;
+        width: 120px;
+        height: auto; /* изменяем высоту автоматически */
+        background-color: #2b2e33;
+        display: none; /* по умолчанию скрыто */
+        border: #000000;
+        border-radius: 10px;
+        z-index: 10; /* чтобы прямоугольник был поверх других элементов */
+      }
+      .button-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 1;
+      }
+
+
+      #root {
+  position: absolute;
+  top: -230px;
+  width: 100%; /* Ширина экрана */
+  height: 50%; /* Высота экрана */
+}
+
+
+  #resizable-block {
+        width: 100%;
+        height: 50px; /* Начальная высота */
+        background-color: white;
+        border-top: 2px solid #ccc;
+        resize: vertical;
+        overflow: auto;
+        top: 100px;
+      }
+
+    .button-list button {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: none; /* Прозрачный фон */
+    cursor: pointer; /* Указатель в виде руки при наведении */
+    z-index: 1;
+  }
+
+
+/* Полоса для изменения размера */
+#resize-bar {
+    position: absolute;
+    width: 6px;
+    height: 100%;
+    background-color: #ccc;
+    cursor: col-resize;
+    right: 50%;
+    top: 0;
+    z-index: 6; 
+    transform: translateX(50%);
+}
+
+#resize-bar2 {
+  position: absolute;
+  right: 50%;
+  width: 50%;
+  height: 10px;
+  right: 0;
+  background-color: #ccc;
+  cursor: row-resize;
+  z-index: 6;    
+  bottom: 50px;
+}
+
+#resize-bar3 {
+  position: absolute;
+  right: 50%;
+  width: 50%;
+  height: 35px;
+  right: 0;
+  background-color: #ccc;
+  cursor: row-resize;
+  z-index: 6;    
+  bottom: 331px;
+  opacity: 0;
+}
+
+
+
+.content-container {
+  position: fixed;
+  top: 55px;
+  right: 0;
+  width: 50%;
+  background-color:#2b2e33;
+  box-sizing: border-box;
+  margin-left: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  z-index: 1;
+  height: calc(100vh - 55px); /* Задаём фиксированную высоту */
+}
+
+.editors-container {
+  display: flex;
+  flex-direction: column; /* Редакторы друг под другом */
+  height: 92%;
+  z-index: 1;
+}
+
+#architecture-editor {
+  display: flex;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+  z-index: 1;
+  height: 44%;
+  overflow: auto;
+}
+
+#testbench-editor {
+  display: flex;
+  flex: 1;
+  border: 1px solid #ccc;
+  background-color: #eaeaea;
+  z-index: 1;
+  overflow: auto;
+}
+
+.compiler-console {
+  flex: 1;
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+  font-family: monospace;
+  font-size: 14px;
+  z-index: 1;
+  margin-top: auto; /* Расположение внизу */
+  width: 100%; /* Ширина на всю страницу */
+  max-height: 300px; /* Ограничение высоты для появления прокрутки */
+  overflow-y: auto; /* Вертикальная прокрутка */
+  overflow-x: hidden; /* Скрытие горизонтальной прокрутки, если она не нужна */
+  
+}
+
+.top-right-container {
+  position: absolute;
+  margin-top: 7px;
+  right: 10px;
+  display: flex;
+  align-items: center;  /* Выравнивание по вертикали */
+  gap: 10px;            /* Расстояние между кнопками */
+  z-index: 10000;
+}
+.top-right-button {
+  width: 35px; /* Размер кнопки */
+  height: 35px;
+  background-size: 100%; /* Масштабирование фонового изображения */
+  cursor: pointer; /* Указатель при наведении */
+  background-color: transparent; /* Прозрачный фон */
+  margin-right: 10px; 
+}
+
+.top-right-button:hover {
+  filter: brightness(1.2); /* Эффект при наведении */
+}
+
+.button-label {
+  font-size: 12px; /* Размер шрифта */
+  color: #dbdbdb; /* Цвет текста */
+  margin-top: 5px; /* Отступ между кнопкой и текстом */
+  text-align: center;
+}
+
+.vhdl-editor {
+  height: '400px';
+  width: '100%';
+}
+
+    </style>
+  </head>
+  <body>
+    <div class="body2">
+      <div class="top-buttons">
+        <div class="button-container">
+          <input id="zoom" type="button" style="background: url(./icon/увеличить.png); background-size: 100%;" />
+          <span class="button-label">Приблизить</span>
+        </div>
+        <div class="button-container">
+          <input id="zoomout" type="button" style="background: url(./icon/уменьшить.png); background-size: 100%;" />
+          <span class="button-label">Отдалить</span>
+        </div>
+        <div class="button-container">
+          <input id="undo" type="button" style="background: url(./icon/назад.png); background-size: 100%;" />
+          <span class="button-label">Назад</span>
+        </div>
+        <div class="button-container">
+          <input id="redo" type="button" style="background: url(./icon/вперёд.png); background-size: 100%;" />
+          <span class="button-label">Вперёд</span>
+        </div>
+        <div class="button-container">
+          <input id="xml" type="button" style="background: url(./icon/скачать.png); background-size: 100%;" />
+          <span class="button-label">Скачать</span>
+        </div>
+        <div class="button-container">
+          <input id="import" type="button" style="background: url(./icon/загрузить.png); background-size: 100%;" />
+          <span class="button-label">Загрузить</span>
+        </div>
+      </div>
+    </div>
+    <div class="top-right-container">
+      <!-- Кнопка скачать VCD слева -->
+      <div class="button-container">
+        <input
+          id="download-vcd-html"
+          class="top-right-button"
+          type="button"
+          style="background: url(./кнопки/folder.png); background-size: 100%;"
+        />
+        <span class="button-label">Скачать VCD</span>
+      </div>
+    
+      <!-- Кнопка компиляции справа -->
+      <div class="button-container">
+        <input
+          id="compile-html"
+          class="top-right-button"
+          type="button"
+          style="background: url(./кнопки/play.png); background-size: 100%;"
+        />
+        <span class="button-label">Компилировать</span>
+      </div>
+    </div>
+    <div class="ыыы"></div>
+    <div id="root"></div>
+    <button class="body1"></button>
+    <div class="rectangle" id="elementList">
+
+      <div class="button-list">
+        <button id="btn2" style="margin-top: 10px; width: 100%; display: flex; flex-direction: column; align-items: center; position: relative;">
+          <img src="./кнопки/умн.svg" alt="Multiply" style="width: 94px; height: 62px; margin-bottom: 8px; filter: invert(1) brightness(1000%); pointer-events: none;">
+          <span class="button-label" style="font-size: 12px; color: #dbdbdb; margin-top: -5px; margin-bottom: 5px;">Умножение</span>
+        </button>
+      
+        <button id="btn1" style="margin-top: 10px; width: 100%; display: flex; flex-direction: column; align-items: center; position: relative;">
+          <img src="./кнопки/сум.svg" alt="Add" style="width: 94px; height: 62px; margin-bottom: 8px; filter: invert(1) brightness(1000%); pointer-events: none;">
+          <span class="button-label" style="font-size: 12px; color: #dbdbdb; margin-top: -5px; margin-bottom: 5px;">Сумма</span>
+        </button>
+      
+        <button id="btn3" style="margin-top: 10px; width: 100%; display: flex; flex-direction: column; align-items: center; position: relative;">
+          <img src="./кнопки/отр.svg" alt="Not" style="width: 65px; height: 43px; margin-bottom: 8px; filter: invert(1) brightness(1000%); pointer-events: none;">
+          <span class="button-label" style="font-size: 12px; color: #dbdbdb; margin-top: -5px; margin-bottom: 5px;">Отрицание</span>
+        </button>
+      
+        <button id="btn6" style="margin-top: 10px; width: 100%; display: flex; flex-direction: column; align-items: center; position: relative;">
+          <img src="./кнопки/вых.svg" alt="Input" style="width: 65px; height: 43px; margin-bottom: 8px;  transform: scaleX(-1); filter: invert(1) brightness(1000%); pointer-events: none;">
+          <span class="button-label" style="font-size: 12px; color: #dbdbdb; margin-top: -5px; margin-bottom: 5px;">Вход</span>
+        </button>
+      
+        <button id="btn7" style="margin-top: 10px; width: 100%; display: flex; flex-direction: column; align-items: center; position: relative;">
+          <img src="./кнопки/вых.svg" alt="Output" style="width: 65px; height: 43px; margin-bottom: 8px; filter: invert(1) brightness(1000%); pointer-events: none;">
+          <span class="button-label" style="font-size: 12px; color: #dbdbdb; margin-top: -5px; margin-bottom: 5px;">Выход</span>
+        </button>
+      </div>
+      
+
+    </div>
+    <div
+      class="button-list"
+      style="margin-top: 65px; display: flex; flex-direction: column; align-items: center; position: absolute; left: 4px; top: 0px"
+    >
+      <button id="add" style="margin-top: 10px; width: 35px; height: 35px; background: url(./icon/добавить.png); background-size: 100%;"></button>
+      <span class="button-label" style="font-size: 10px; color: #dbdbdb;">Добавить...</span>
+      <input id="delete" type="button" style="margin-top: 10px; width: 35px; height: 35px; background: url(./icon/удалить.png); background-size: 100%;" />
+      <span class="button-label" style="font-size: 10px; color: #dbdbdb;">Удалить</span>
+      <input id="wire" type="checkbox" style="display: none;" />
+      <label for="wire">
+          <img src="./icon/связи1.png" width="35px" height="35px" id="checkbox-wire-on"  />
+          <img src="./icon/связи.png"  width="35px" height="35px" id="checkbox-wire-off" style="display: none;" />
+      </label>
+      <span class="button-label" style="font-size: 10px; color: #dbdbdb;">Wire Mode</span>
+      <input id="grid" type="checkbox" style="display: none;"/>
+      <label for="grid">
+          <img src="./icon/сетка1.png" width="35px" class="checkbox-image" id="checkbox-grid-off" style="display: none; left: 10px;";/>
+          <img src="./icon/сетка.png"  width="35px" class="checkbox-image" style="left: 10px;" id="checkbox-grid-on" />
+      </label>      
+      <span class="button-label" style="font-size: 10px; color: #dbdbdb;">Сетка</span>                  <input 
+      type="file" 
+      accept=".xml" 
+      id="importFileInput" 
+      style="display: none;" 
+      onchange="handleFileImport(event)" 
+    />
+    <button id="addgraph" style="margin-top: 330px; width: 50px; height: 96px; background: url(./кнопки/addgraph.svg); background-size: 100%;"></button>
+    </div>
+    </div>
+    <div id="resize-bar"></div>
+    <div id="resize-bar2"></div>
+    <div id="resize-bar3"></div>
+
+    <div id="side-panel" style="
+    position: fixed;
+    bottom: 0;
+    left: -100%; /* Скрыто за экраном */
+    flex: 1;
+    height: 300px;
+    background-color: #2b2e33;
+    box-shadow: 3px 0 5px rgba(0, 0, 0, 0.5);
+    transition: left 0.3s ease; /* Плавный выезд */
+    z-index: 0;">
+
+    
+
+
+
+    <div id="resizer-bar" style="
+    height: 10px;
+    cursor: row-resize;
+    background-color: #ccc;
+    position: absolute;
+    top: -10px;
+    left: 0;
+    right: 0;
+    z-index: 10;
+  "></div>
+  </div>
+
+    <script>
+
+const addGraphButton = document.getElementById('addgraph');
+const sidePanel = document.getElementById('side-panel');
+
+
+let isPanelOpen = false;
+
+addGraphButton.addEventListener('click', async () => {
+  const myContainer = document.querySelector('.my-container');
+
+  if (isPanelOpen) {
+    sidePanel.style.left = '-100%';
+  } else {
+    sidePanel.style.left = '50px';
+
+    const containerWidth = parseInt(getComputedStyle(myContainer).width, 10);
+    sidePanel.style.width = (containerWidth - 50) + 'px';
+
+  }
+
+  isPanelOpen = !isPanelOpen;
+});
+
+
+//////////////////////////////////////////////////////////////////////
+
+const resizeBar = document.getElementById('resize-bar2');
+const resizeBar3 = document.getElementById('resize-bar3');
+let isResizing = false;
+let startY = 0;
+let startHeightEditors = 0;
+let Heightarchi = 0;
+
+
+resizeBar.addEventListener('mousedown', (event) => {
+  isResizing = true;
+  startY = event.clientY;
+  startHeightArchitecture = document.querySelector('#architecture-editor').offsetHeight;
+  const editorsContainer = document.querySelector('.editors-container');
+  startHeightEditors = editorsContainer.offsetHeight;
+  document.body.style.userSelect = 'none'; // Отключаем выделение текста
+});
+
+document.addEventListener('mousemove', (event) => {
+  if (!isResizing) return;
+
+  const deltaY = event.clientY - startY;
+  const editorsContainer = document.querySelector('.editors-container');
+  const contentContainer = document.querySelector('.content-container');
+  const compilerConsole = document.querySelector('.compiler-console');
+
+  let resizeRequest;
+
+const observer = new ResizeObserver(() => {
+  if (resizeRequest) return;
+
+  resizeRequest = requestAnimationFrame(() => {
+    // Логика изменения размеров
+    console.log('Resize observed!');
+    resizeRequest = null;
+  });
+});
+
+observer.observe(document.querySelector('.content-container'));
+
+startHeightArchitecture = document.querySelector('#architecture-editor').offsetHeight;
+
+  const newHeightEditors = startHeightEditors + deltaY;
+  const resizetop = startHeightEditors + deltaY + 50;
+  const resizetop2 = startHeightArchitecture + 100;
+  // Ограничиваем минимальную и максимальную высоту
+  if (newHeightEditors > 400 && newHeightEditors < 640) {
+    observer.disconnect();
+    editorsContainer.style.height = `${newHeightEditors}px`;
+    observer.observe(document.querySelector('.content-container')); // Включаем снова
+    resizeBar.style.top = `${resizetop}px`; // Перемещаем полосу в соответствии с высотой
+    resizeBar3.style.top = `${resizetop2}px`;
+  }
+});
+
+document.addEventListener('mouseup', () => {
+  isResizing = false;
+  document.body.style.userSelect = 'auto'; // Возвращаем выделение текста
+});
+
+
+//////////////////////////////////////////////////////////////////////
+
+const resizeBarHorizontal = document.getElementById('resize-bar');
+
+let isResizingHorizontal = false;
+let startX = 0;
+let startWidthContent = 0;
+let startWidthMyContainer = 0;
+let startLeftResizeBar = 0;
+
+// Горизонтальный ресайз
+resizeBarHorizontal.addEventListener('mousedown', (event) => {
+  const contentContainer = document.querySelector('.content-container');
+  const myContainer = document.querySelector('.my-container');
+  sidePanel.style.width = myContainer.style.width;
+  isResizingHorizontal = true;
+  startX = event.clientX;
+  startWidthContent = contentContainer.offsetWidth;
+  startWidthMyContainer = myContainer.offsetWidth;
+  startLeftResizeBar = resizeBarHorizontal.offsetLeft;
+  
+  // Отключаем выделение текста и взаимодействие с iframe
+  document.body.style.userSelect = 'none';
+});
+
+document.addEventListener('mousemove', async function(event) {
+  if (!isResizingHorizontal) return;
+
+  let resizeRequest;
+
+  const observer = new ResizeObserver(() => {
+    if (resizeRequest) return;
+    resizeRequest = requestAnimationFrame(() => {
+      console.log('Resize observed!');
+      resizeRequest = null;
+    });
+  });
+
+  observer.observe(document.querySelector('.content-container'));
+
+  const contentContainer = document.querySelector('.content-container');
+  const myContainer = document.querySelector('.my-container');
+  
+  const deltaX = event.clientX - startX;
+
+  const newWidthContent = startWidthContent - deltaX;
+  const newWidthMyContainer = startWidthMyContainer + deltaX;
+  const newLeft = startLeftResizeBar + deltaX;
+  const newWidthContent2 = `calc(100% - ${newWidthMyContainer}px)`;
+  
+  if (newWidthContent > 130 && newWidthContent < 1400) {
+    contentContainer.style.width = `${newWidthContent}px`;
+    resizeBarHorizontal.style.left = `${newLeft}px`;
+    myContainer.style.width = `${newWidthMyContainer}px`;
+    resizeBar.style.width = `${newWidthContent}px`;
+    resizeBar3.style.width = `${newWidthContent}px`;
+    const containerWidth = parseInt(myContainer.style.width, 10);
+    sidePanel.style.width = (containerWidth - 50) + 'px';
+
+    observer.observe(document.querySelector('.content-container'));
+  }
+});
+
+document.addEventListener('mouseup', () => {
+  if (isResizingHorizontal) {
+    isResizingHorizontal = false;
+    document.body.style.userSelect = 'auto';
+    // Восстанавливаем взаимодействие с iframe
+  }
+});
+
+//////////////////////////////////////////////////////////////////////
+
+let startHeightArchitecture = 0;
+let startHeightTestbench = 0;
+let isResizing3 = false;
+let start2Y = 0;
+
+// Начало ресайза
+resizeBar3.addEventListener('mousedown', (event) => {
+    isResizing3 = true;
+    start2Y = event.clientY;
+
+    // Сохраняем начальную высоту редакторов
+    startHeightArchitecture = document.querySelector('#architecture-editor').offsetHeight;
+    startHeightTestbench = document.querySelector('#testbench-editor').offsetHeight;
+    document.body.style.userSelect = 'none'; // Отключаем выделение текста
+});
+
+// Изменение размеров
+document.addEventListener('mousemove', (event) => {
+    if (!isResizing3) return;
+
+    let resizeRequest;
+
+    const observer = new ResizeObserver(() => {
+      if (resizeRequest) return;
+
+      resizeRequest = requestAnimationFrame(() => {
+        // Логика изменения размеров
+        console.log('Resize observed!');
+        resizeRequest = null;
+      });
+    });
+
+observer.observe(document.querySelector('.content-container'));
+
+
+    const deltaY = event.clientY - start2Y;
+    const deltaX = event.clientX - startX;
+
+    // Новые высоты
+    const newHeightArchitecture = startHeightArchitecture + deltaY;
+    const newHeightTestbench = startHeightTestbench - deltaY;
+    const resizetop3 = newHeightArchitecture + 100; // Уменьшаем на 10px для учета маргина
+
+
+    // Ограничения на минимальную и максимальную высоту
+    const contentContainerHeight = document.querySelector('.content-container').offsetHeight;
+    
+    if (newHeightArchitecture > 6 && newHeightArchitecture < 700 && newHeightTestbench > 6) {
+        document.querySelector('#architecture-editor').style.height = `${newHeightArchitecture}px`;
+        document.querySelector('#testbench-editor').style.height = `${newHeightTestbench}px`;
+        observer.observe(document.querySelector('.content-container')); // Включаем снова
+        resizeBar3.style.top = `${resizetop3}px`;
+      }
+});
+
+// Завершение ресайза
+document.addEventListener('mouseup', () => {
+    isResizing3 = false;
+    document.body.style.userSelect = 'auto'; // Включаем выделение текста
+});
+
+const resizerBar = document.getElementById('resizer-bar');
+
+let isResizing4 = false;
+let startY4 = 0;
+let startHeight = 0;
+
+
+resizerBar.addEventListener('mousedown', (e) => {
+  isResizing4 = true;
+  startY4 = e.clientY;
+  startHeight = parseInt(getComputedStyle(sidePanel).height, 10);
+  document.body.style.cursor = 'ns-resize';
+  document.body.style.userSelect = 'none';
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isResizing4) return;
+
+  const dy = startY4 - e.clientY; // разница: тянем вверх — растёт
+  const newHeight = startHeight + dy;
+
+  const minHeight = 100;
+  const maxHeight = window.innerHeight - 77;
+
+  sidePanel.style.height = Math.max(minHeight, Math.min(maxHeight, newHeight)) + 'px';
+});
+
+window.addEventListener('mouseup', () => {
+  if (isResizing4) {
+    isResizing4 = false;
+    document.body.style.cursor = 'default';
+    document.body.style.userSelect = 'auto';
+
+  }
+});
+
+//////////////////////////////////////////////////////////////////////
+
+
+      const addButton = document.getElementById("add");
+      const elementList = document.getElementById("elementList");
+
+      addButton.addEventListener("click", (event) => {
+        event.stopPropagation(); // предотвращаем всплытие события
+        const isVisible = elementList.style.display === "block";
+        elementList.style.display = isVisible ? "none" : "block"; // переключаем видимость
+      });
+
+      // Скрыть список при клике вне его
+      document.addEventListener("click", (event) => {
+        if (!elementList.contains(event.target) && event.target !== addButton) {
+          elementList.style.display = "none";
+        }
+      });
+
+      // Пример функции для обработки кликов на кнопках внутри списка
+      document.querySelectorAll("#elementList input").forEach(button => {
+        button.addEventListener("click", (event) => {
+          const buttonValue = event.target.value;
+          // Здесь можно добавить код для обработки добавления элемента в граф или код
+        });
+      });
+      const wirebutton = document.getElementById("wire");
+        const wirebutton1 = document.getElementById("checkbox-wire-on");
+        const wirebutton2 = document.getElementById("checkbox-wire-off");
+        wirebutton.addEventListener("change", () => {
+            if (wirebutton.checked) {
+                wirebutton1.style.display = "none";
+                wirebutton2.style.display = "block";
+            } else {
+                wirebutton1.style.display = "block";
+                wirebutton2.style.display = "none";
+            }
+        });
+
+        const gridButton = document.getElementById("grid");
+        const gridButtonOff = document.getElementById("checkbox-grid-off");
+        const gridButtonOn = document.getElementById("checkbox-grid-on");
+        gridButton.addEventListener("change", () => {
+            if (gridButton.checked) {
+                gridButtonOff.style.display = "none";
+                gridButtonOn.style.display = "block";
+            } else {
+              const container = document.querySelector(".my-container");
+                container.style.backgroundImage = "none";
+                gridButtonOff.style.display = "block";
+                gridButtonOn.style.display = "none";
+            }
+        });
+    </script>
+  </body>
+</html>

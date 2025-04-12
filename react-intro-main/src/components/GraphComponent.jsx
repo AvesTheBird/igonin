@@ -350,16 +350,35 @@ CellRenderer.registerShape('shape4', Shape4);
   StyleRegistry.putValue('wireEdgeStyle', EdgeStyle.WireConnector);
 
 
-    let graph = new MyCustomGraph(container, null, [
-      MyCustomCellEditorHandler,
-      TooltipHandler,
-      SelectionCellsHandler,
-      PopupMenuHandler,
-      MyCustomConnectionHandler,
-      MyCustomSelectionHandler,
-      MyCustomPanningHandler,
-    ]);
-    setVariableFromEffect(graph);
+  let graph = new MyCustomGraph(container, null, [
+    MyCustomCellEditorHandler,
+    TooltipHandler,
+    SelectionCellsHandler,
+    PopupMenuHandler,
+    MyCustomConnectionHandler,
+    MyCustomSelectionHandler,
+    MyCustomPanningHandler,
+  ]);
+  
+  setVariableFromEffect(graph); // оставляем
+  
+  // === ВОТ ЭТА ЧАСТЬ ===
+  graph.model.addListener(InternalEvent.CHANGE, () => {
+    const xml = new ModelXmlSerializer(graph.getDataModel()).export();
+  
+    fetch('http://localhost:5000/save-graph-xml', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/xml',
+      },
+      body: xml,
+    })
+      .then((res) => res.text())
+      .then(() => console.log('[XML] отправлен'))
+      .catch((err) => console.error('[XML] ошибка:', err));
+  });
+  
+
 
   let labelBackground = invert ? '#000000' : '#FFFFFF';
   let fontColor = invert ? '#FFFFFF' : '#000000';
@@ -840,6 +859,18 @@ document.getElementById("xml").onclick = () => {
 
 
 
+const sendXmlToServer = (xmlText) => {
+  fetch('http://localhost:5000/save-graph-xml', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/xml',
+    },
+    body: xmlText,
+  })
+  .then((res) => res.text())
+  .then((result) => console.log('[XML] Схема успешно отправлена'))
+  .catch((err) => console.error('[XML] Ошибка при отправке XML:', err));
+};
 
 ///////////////////////////////////////////////////////////
 

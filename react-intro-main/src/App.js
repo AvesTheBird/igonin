@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { YourComponent } from './components/GraphComponent'; // Исправлено на импорт по умолчанию
 import VHDLEditorWithCompiler from './components/Editor';
-import SignalGraph from './components/SignalGraph';
+import TextWatcher from './components/textwatcher';
+
 function App() {
   
   // Stop error ResizeObserver
@@ -26,7 +27,6 @@ window.ResizeObserver = class ResizeObserver extends OriginalResizeObserver {
     <>
       <VHDLEditorWithCompiler />
       <YourComponent/>
-      <SignalGraph/>
 
     </>
   );

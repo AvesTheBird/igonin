@@ -5,7 +5,9 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 
-  
+if (module.hot && process.env.NODE_ENV !== 'production') {
+    module.hot.accept();
+  }  
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <App />

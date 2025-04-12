@@ -17,7 +17,6 @@
 html, body {
   overflow: hidden; /* Убираем прокрутку */
 }
-
 .my-container {
   position: relative;
   overflow: hidden;
@@ -392,17 +391,64 @@ html, body {
     box-shadow: 3px 0 5px rgba(0, 0, 0, 0.5);
     transition: left 0.3s ease; /* Плавный выезд */
     z-index: 0;">
-    <canvas id="graph-canvas" style="width: 50vw; height: 100%;"></canvas>
 
-    </div>
+    
+
+<iframe 
+  id="vcdrom-iframe" 
+  src="app/vcdrom.html"
+  frameborder="0"
+  style="
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: white;
+  "
+></iframe>
+
+
+    <div id="resizer-bar" style="
+    height: 10px;
+    cursor: row-resize;
+    background-color: #ccc;
+    position: absolute;
+    top: -10px;
+    left: 0;
+    right: 0;
+    z-index: 10;
+  "></div>
+  </div>
 
     <script>
 
-
-
 const addGraphButton = document.getElementById('addgraph');
 const sidePanel = document.getElementById('side-panel');
-const graphCanvas = document.getElementById('graph-canvas');
+
+
+let isPanelOpen = false;
+
+addGraphButton.addEventListener('click', async () => {
+  const myContainer = document.querySelector('.my-container');
+
+  if (isPanelOpen) {
+    sidePanel.style.left = '-100%';
+  } else {
+    sidePanel.style.left = '50px';
+
+    const containerWidth = parseInt(getComputedStyle(myContainer).width, 10);
+    sidePanel.style.width = (containerWidth - 50) + 'px';
+
+    const iframe = document.getElementById('vcdrom-iframe');
+    if (iframe) {
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+    }
+  }
+
+  isPanelOpen = !isPanelOpen;
+});
 
 
 //////////////////////////////////////////////////////////////////////
@@ -479,35 +525,18 @@ let startLeftResizeBar = 0;
 
 // Горизонтальный ресайз
 resizeBarHorizontal.addEventListener('mousedown', (event) => {
-  // Сохраняем начальные значения при начале ресайза
   const contentContainer = document.querySelector('.content-container');
   const myContainer = document.querySelector('.my-container');
-  
+  sidePanel.style.width = myContainer.style.width;
   isResizingHorizontal = true;
   startX = event.clientX;
   startWidthContent = contentContainer.offsetWidth;
   startWidthMyContainer = myContainer.offsetWidth;
   startLeftResizeBar = resizeBarHorizontal.offsetLeft;
   
-  // Отключаем выделение текста на странице во время изменения размера
+  // Отключаем выделение текста и взаимодействие с iframe
   document.body.style.userSelect = 'none';
-});
-
-
-// Флаг для отслеживания состояния панели
-let isPanelOpen = false;
-
-// Обработчик клика для открытия/закрытия панели
-addGraphButton.addEventListener('click', async () => {
-  const myContainer = document.querySelector('.my-container');
-    if (isPanelOpen) {
-        sidePanel.style.left = '-100%'; // Закрыть панель
-    } else {
-        sidePanel.style.left = '0'; // Открыть панель
-        sidePanel.style.width = myContainer.style.width;
-
-    }
-    isPanelOpen = !isPanelOpen; // Переключить состояние
+  if (iframe) iframe.style.pointerEvents = 'none';
 });
 
 document.addEventListener('mousemove', async function(event) {
@@ -517,9 +546,7 @@ document.addEventListener('mousemove', async function(event) {
 
   const observer = new ResizeObserver(() => {
     if (resizeRequest) return;
-
     resizeRequest = requestAnimationFrame(() => {
-      // Логика изменения размеров
       console.log('Resize observed!');
       resizeRequest = null;
     });
@@ -527,42 +554,37 @@ document.addEventListener('mousemove', async function(event) {
 
   observer.observe(document.querySelector('.content-container'));
 
-
   const contentContainer = document.querySelector('.content-container');
   const myContainer = document.querySelector('.my-container');
   
   const deltaX = event.clientX - startX;
 
-  // Вычисляем новую ширину для контейнера и полосы ресайза
-  const newWidthContent = startWidthContent - deltaX; // Уменьшаем на 10px для учета маргина
-  const newWidthMyContainer = startWidthMyContainer + deltaX; // Контейнер myContainer меняет ширину
-  const newLeft = startLeftResizeBar + deltaX; // Позиция полосы ресайза
+  const newWidthContent = startWidthContent - deltaX;
+  const newWidthMyContainer = startWidthMyContainer + deltaX;
+  const newLeft = startLeftResizeBar + deltaX;
   const newWidthContent2 = `calc(100% - ${newWidthMyContainer}px)`;
-  // Ограничиваем минимальную и максимальную ширину
+  
   if (newWidthContent > 130 && newWidthContent < 1400) {
     contentContainer.style.width = `${newWidthContent}px`;
     resizeBarHorizontal.style.left = `${newLeft}px`;
     myContainer.style.width = `${newWidthMyContainer}px`;
     resizeBar.style.width = `${newWidthContent}px`;
     resizeBar3.style.width = `${newWidthContent}px`;
-    sidePanel.style.width = myContainer.style.width;
+    const containerWidth = parseInt(myContainer.style.width, 10);
+    sidePanel.style.width = (containerWidth - 50) + 'px';
 
-    const chartData = await loadCVDData(); 
-    if (chartData) {
-            renderGraph(chartData); // Построить график
-        }
-    observer.observe(document.querySelector('.content-container')); // Включаем снова
+    observer.observe(document.querySelector('.content-container'));
   }
 });
 
 document.addEventListener('mouseup', () => {
-  // Завершаем процесс ресайза
-  isResizingHorizontal = false;
-  document.body.style.userSelect = 'auto'; // Включаем выделение текста
+  if (isResizingHorizontal) {
+    isResizingHorizontal = false;
+    document.body.style.userSelect = 'auto';
+    // Восстанавливаем взаимодействие с iframe
+    if (iframe) iframe.style.pointerEvents = 'auto';
+  }
 });
-
-
-
 
 //////////////////////////////////////////////////////////////////////
 
@@ -625,6 +647,46 @@ observer.observe(document.querySelector('.content-container'));
 document.addEventListener('mouseup', () => {
     isResizing3 = false;
     document.body.style.userSelect = 'auto'; // Включаем выделение текста
+});
+
+const resizerBar = document.getElementById('resizer-bar');
+
+let isResizing4 = false;
+let startY4 = 0;
+let startHeight = 0;
+
+const iframe = document.getElementById('vcdrom-iframe');
+
+resizerBar.addEventListener('mousedown', (e) => {
+  isResizing4 = true;
+  startY4 = e.clientY;
+  startHeight = parseInt(getComputedStyle(sidePanel).height, 10);
+  document.body.style.cursor = 'ns-resize';
+  document.body.style.userSelect = 'none';
+
+  if (iframe) iframe.style.pointerEvents = 'none'; // временно отключаем
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isResizing4) return;
+
+  const dy = startY4 - e.clientY; // разница: тянем вверх — растёт
+  const newHeight = startHeight + dy;
+
+  const minHeight = 100;
+  const maxHeight = window.innerHeight - 77;
+
+  sidePanel.style.height = Math.max(minHeight, Math.min(maxHeight, newHeight)) + 'px';
+});
+
+window.addEventListener('mouseup', () => {
+  if (isResizing4) {
+    isResizing4 = false;
+    document.body.style.cursor = 'default';
+    document.body.style.userSelect = 'auto';
+
+    if (iframe) iframe.style.pointerEvents = 'auto'; // возвращаем
+  }
 });
 
 //////////////////////////////////////////////////////////////////////

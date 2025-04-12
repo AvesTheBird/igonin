@@ -1,0 +1,58 @@
+<GraphDataModel>
+  <root>
+    <Cell id="0">
+      <Object as="style" />
+    </Cell>
+    <Cell id="1" parent="0">
+      <Object as="style" />
+    </Cell>
+    <Cell id="2" value="" vertex="1" connectable="0" parent="1">
+      <Geometry _x="80" _y="100" _width="60" _height="60" as="geometry" />
+      <Object shape="shape3" strokeColor="#000000" as="style" />
+    </Cell>
+    <Cell id="3" value="" vertex="1" parent="2">
+      <Geometry _width="20" _height="16" relative="1" as="geometry">
+        <Point _x="77.8" _y="16" as="offset" />
+      </Geometry>
+      <Object shape="line" align="top" verticalAlign="top" fontSize="10" routingCenterX="-0.5" spacingLeft="-5" spacingTop="-7" fontColor="#000000" strokeColor="#000000" as="style" />
+    </Cell>
+    <Cell id="4" value="" vertex="1" parent="2">
+      <Geometry _width="20" _height="16" relative="1" as="geometry">
+        <Point _x="-12" _y="8" as="offset" />
+      </Geometry>
+      <Object shape="line" align="top" verticalAlign="top" fontSize="10" routingCenterX="-0.5" spacingLeft="-5" spacingTop="-7" fontColor="#000000" strokeColor="#000000" as="style" />
+    </Cell>
+    <Cell id="5" value="" vertex="1" parent="2">
+      <Geometry _width="20" _height="16" relative="1" as="geometry">
+        <Point _x="-12" _y="24" as="offset" />
+      </Geometry>
+      <Object shape="line" align="top" verticalAlign="top" fontSize="10" routingCenterX="-0.5" spacingLeft="-5" spacingTop="-7" fontColor="#000000" strokeColor="#000000" as="style" />
+    </Cell>
+    <Cell id="6" value="" vertex="1" connectable="0" parent="1">
+      <Geometry _x="80" _y="80" _width="40" _height="40" as="geometry" />
+      <Object shape="shape2" strokeColor="#000000" as="style" />
+    </Cell>
+    <Cell id="7" value="" vertex="1" parent="6">
+      <Geometry _width="15" _height="16" relative="1" as="geometry">
+        <Point _x="-15" _y="12" as="offset" />
+      </Geometry>
+      <Object shape="line" align="top" verticalAlign="top" fontSize="10" routingCenterX="-0.5" spacingLeft="0" spacingTop="-7" fontColor="#000000" strokeColor="#000000" as="style" />
+    </Cell>
+    <Cell id="8" value="◯" vertex="1" parent="6">
+      <Geometry _width="15" _height="16" relative="1" as="geometry">
+        <Point _x="47.5" _y="12" as="offset" />
+      </Geometry>
+      <Object shape="line" align="top" verticalAlign="top" fontSize="10" routingCenterX="-0.5" spacingLeft="-20" spacingTop="0" fontColor="#000000" strokeColor="#000000" as="style" />
+    </Cell>
+    <Cell id="9" value="" vertex="1" connectable="0" parent="1">
+      <Geometry _x="80" _y="80" _width="35" _height="25" as="geometry" />
+      <Object shape="customTriangle" strokeColor="#000000" as="style" />
+    </Cell>
+    <Cell id="10" value="X1" vertex="1" parent="9">
+      <Geometry _width="20" _height="16" relative="1" as="geometry">
+        <Point _x="51.5" _y="4.5" as="offset" />
+      </Geometry>
+      <Object shape="line" align="top" verticalAlign="top" fontSize="10" routingCenterX="-0.5" spacingLeft="-5" spacingTop="-7" fontColor="red" strokeColor="#000000" as="style" />
+    </Cell>
+  </root>
+</GraphDataModel>

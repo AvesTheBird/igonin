@@ -1,7 +1,0 @@
-v 4
-file . "tb_vhdl_code.vhdl" "2816995df48554fb6f58a1d46e813960317fd2bc" "20250323110749.626":
-  entity tb_adder at 1( 0) + 0 on 15;
-  architecture testbench of tb_adder at 9( 105) + 0 on 16;
-file . "vhdl_code.vhdl" "2196c7d53eaa56215f9445217ea548dc361c466e" "20250323110749.580":
-  entity adder at 1( 0) + 0 on 13;
-  architecture rtl of adder at 23( 542) + 0 on 14;
