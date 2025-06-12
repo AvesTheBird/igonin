@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/avesthebird/igonin.git/static/css/main.aa07b004.css",
+    "main.js": "/avesthebird/igonin.git/static/js/main.ef0568d4.js",
+    "static/js/453.08d0cd26.chunk.js": "/avesthebird/igonin.git/static/js/453.08d0cd26.chunk.js",
+    "index.html": "/avesthebird/igonin.git/index.html",
+    "main.aa07b004.css.map": "/avesthebird/igonin.git/static/css/main.aa07b004.css.map",
+    "main.ef0568d4.js.map": "/avesthebird/igonin.git/static/js/main.ef0568d4.js.map",
+    "453.08d0cd26.chunk.js.map": "/avesthebird/igonin.git/static/js/453.08d0cd26.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.aa07b004.css",
+    "static/js/main.ef0568d4.js"
+  ]
+}
