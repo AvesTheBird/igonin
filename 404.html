@@ -1,0 +1,6 @@
+<script>
+  const path = location.pathname.startsWith('/igonin') 
+    ? location.pathname 
+    : '/igonin' + location.pathname;
+  window.location.href = path;
+</script>
